@@ -2,11 +2,11 @@
 
 To retrieve certificates from [Let's Encrypt](https://letsencrypt.org), there are multiple option [multiple challenge types](https://letsencrypt.org/docs/challenge-types/) available. To use the most common challenge type, [HTTP-01 challenge](https://letsencrypt.org/docs/challenge-types/#http-01-challenge), certbot need to be accessible from the Internet.
 
-In scenarios you want to create certificates for private networks, which are not accessible from the Internet, I use certbot with challenge type [DNS-01 challenge](https://letsencrypt.org/docs/challenge-types/#dns-01-challenge). This works with creating a TXT record at your DNS provider. This record gets queried by Let's Encrypt and if it matches, the certificate gets issued.
+In my scenario, I want to create certificates for my private home network, which is not accessible from the Internet. I use certbot with challenge type [DNS-01 challenge](https://letsencrypt.org/docs/challenge-types/#dns-01-challenge) to solve this. To achieve this, certbot creates a TXT record at your DNS provider. This record gets queried by Let's Encrypt and if it matches, the certificate gets issued.
 
-My DNS provider is [Netcup](https://www.netcup.com/de) and there is a Netcup certbot plugin available at [coldfix/certbot-dns-netcup](https://hub.docker.com/r/coldfix/certbot-dns-netcup).
+My DNS provider is [Netcup](https://www.netcup.com/de) and there is a Netcup certbot plugin available at [coldfix/certbot-dns-netcup](https://hub.docker.com/r/coldfix/certbot-dns-netcup) which is used in this repository.
 
-The following chapters cover setup and issueing of certificates on a regular basis. I publish it because it might help anybody to setup a similar solution.
+The following chapters cover setup and issuing of certificates on a regular basis. I publish it because it might help anybody to setup a similar solution.
 
 # Requirements
 
@@ -23,7 +23,7 @@ cp roles/install-certbot/vars/main-sample.yml roles/install-certbot/vars/main.ym
 cp roles/install-certbot/files/netcup-credentials.ini.sample roles/install-certbot/files/netcup-credentials.ini
 ```
 
-Open `roles/install-certbot/vars/main.yml` in your prefered editor and adapt settings. For each domain group under `domain_groups`, a single certificate will get issued. The very first domain a a group will get the Common Name, more domains will be issued as Subject Alternative Name (SAN) entries.
+Open `roles/install-certbot/vars/main.yml` in your prefered editor and adapt settings. For each domain group under `domain_groups`, a single certificate will get issued. The very first domain of a group will be the Common Name of the certificate, more domains will be issued as Subject Alternative Name (SAN) entries.
 
 Open `roles/install-certbot/files/netcup-credentials.ini` in your prefered editor and enter your Netcup credentials.
 
@@ -45,4 +45,4 @@ in setup directory.
 
 ## Upgrade
 
-Ansible role is creating a cronjob which updates base images before issueing new certificates.
+Ansible role is creating a cronjob which updates base images before issuing new certificates.
