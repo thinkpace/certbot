@@ -1,0 +1,2 @@
+ansible/roles/install-certbot/files/netcup-credentials.ini
+ansible/roles/install-certbot/vars/main.yml

@@ -1,0 +1,4 @@
+- hosts: certbot
+  become: true
+  roles:
+    - install-certbot

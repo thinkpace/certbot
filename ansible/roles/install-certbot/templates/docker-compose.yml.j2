@@ -1,0 +1,11 @@
+services:
+  certbot-{{ item.group_name }}:
+    image: coldfix/certbot-dns-netcup:latest
+    container_name: certbot-{{ item.group_name }}
+    cap_drop:
+      - all
+    volumes:
+      - {{ certbot_data_root }}/var_lib_letsencrypt:/var/lib/letsencrypt
+      - {{ certbot_data_root }}/etc_letsencrypt:/etc/letsencrypt
+      - {{ certbot_data_root }}/netcup-credentials.ini:/etc/netcup-credentials.ini
+    command: certbot certonly --non-interactive --authenticator dns-netcup --dns-netcup-propagation-seconds 900 --dns-netcup-credentials /etc/netcup-credentials.ini --keep-until-expiring --expand --server https://acme-v02.api.letsencrypt.org/directory --agree-tos --email '{{ certbot_mail }}' {% for domain in item.domains -%}-d '{{ domain }}' {% endfor -%}

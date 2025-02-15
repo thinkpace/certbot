@@ -1,0 +1,60 @@
+---
+- name: Create installation directory
+  file:
+    path: '{{ certbot_path }}'
+    state: directory
+    owner: '{{ certbot_user }}'
+    group: '{{ certbot_group }}'
+    mode: 0775
+- name: Create data directory root
+  file:
+    path: '{{ certbot_data_root }}'
+    state: directory
+    owner: '{{ certbot_user }}'
+    group: '{{ certbot_group }}'
+    mode: 0550
+- name: Create lib directory
+  file:
+    path: '{{ certbot_data_root }}/var_lib_letsencrypt'
+    state: directory
+    owner: '{{ certbot_user }}'
+    group: '{{ certbot_group }}'
+    mode: 0777
+- name: Create etc directory
+  file:
+    path: '{{ certbot_data_root }}/etc_letsencrypt'
+    state: directory
+    owner: '{{ certbot_user }}'
+    group: '{{ certbot_group }}'
+    mode: 0777
+- name: Ensure netcup-credentials are available
+  ansible.builtin.copy:
+    src: netcup-credentials.ini
+    dest: '{{ certbot_data_root }}/netcup-credentials.ini'
+    owner: '{{ certbot_user }}'
+    group: '{{ certbot_group }}'
+    mode: 0666
+- name: Get certbot user info
+  ansible.builtin.getent:
+    database: passwd
+    key: '{{ certbot_user }}'
+- name: Copy docker-compose files
+  ansible.builtin.template:
+    src: 'docker-compose.yml.j2'
+    dest: '{{ certbot_path }}/docker-compose-{{ item.group_name }}.yml'
+    owner: root
+    group: root
+    mode: 0664
+  vars:
+    certbot_user_id: '{{ ansible_facts.getent_passwd[certbot_user][1] }}'
+    certbot_group_id: '{{ ansible_facts.getent_passwd[certbot_group][1] }}'
+  loop: '{{ domain_groups }}'
+- name: Enable weekly certificate upgrades
+  ansible.builtin.cron:
+    name: 'Run {{ certbot_path }}/docker-compose-{{ item.group_name }}.yml'
+    user: root
+    weekday: 0
+    hour: '{{ item.update_hour }}'
+    minute: '{{ item.update_minute }}'
+    job: 'docker compose -f {{ certbot_path }}/docker-compose-{{ item.group_name }}.yml down && docker compose -f {{ certbot_path }}/docker-compose-{{ item.group_name }}.yml pull && docker compose -f {{ certbot_path }}/docker-compose-{{ item.group_name }}.yml up -d'
+  loop: '{{ domain_groups }}'

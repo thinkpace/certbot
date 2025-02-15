@@ -1,0 +1,28 @@
+---
+certbot_path: '/opt/certbot'
+certbot_data_root: '/path/to/my/certbot/data/folder'
+certbot_user: certbot
+certbot_group: certbot
+certbot_mail: mail@example.com
+domain_groups:
+  - group_name: group1
+    update_hour: 6
+    update_minute: 00
+    domains:
+      - domain1.group1.example.com
+      - domain2.group1.example.com
+      - domain3.group1.example.com
+  - group_name: group2
+    update_hour: 6
+    update_minute: 20
+    domains:
+      - domain1.group2.example.com
+      - domain2.group2.example.com
+      - domain3.group2.example.com
+  - group_name: group3
+    update_hour: 6
+    update_minute: 40
+    domains:
+      - domain1.group3.example.com
+      - domain2.group3.example.com
+      - domain3.group3.example.com
